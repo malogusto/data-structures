@@ -1,0 +1,126 @@
+from collections import deque
+
+class Node:
+    def __init__(self, value):
+        self.value = value
+        self.left = None
+        self.right = None
+
+class BinaryTree:
+    def __init__(self):
+        self.root = None
+
+    def preorder_traversal(self, node):
+        if node:
+            print(node.value, end=" ")
+            self.preorder_traversal(node.left)
+            self.preorder_traversal(node.right)
+
+    def inorder_traversal(self, node):
+        if node:
+            self.inorder_traversal(node.left)
+            print(node.value, end=" ")
+            self.inorder_traversal(node.right)
+
+    def postorder_traversal(self, node):
+        if node:
+            self.postorder_traversal(node.left)
+            self.postorder_traversal(node.right)
+            print(node.value, end=" ")
+
+    def level_order_traversal(self):
+        if not self.root:
+            return
+        queue = deque()
+        queue.append(self.root)
+        while queue:
+            current = queue.popleft()
+            print(current.value, end=" ")
+            if current.left:
+                queue.append(current.left)
+            if current.right:
+                queue.append(current.right)
+
+    def insert(self, value):
+        new_node = Node(value)
+        if not self.root:
+            self.root = new_node
+            return
+        queue = deque()
+        queue.append(self.root)
+        while queue:
+            current = queue.popleft()
+            if not current.left:
+                current.left = new_node
+                return
+            else:
+                queue.append(current.left)
+            if not current.right:
+                current.right = new_node
+                return
+            else:
+                queue.append(current.right)
+
+    def delete(self, value):
+        if not self.root:
+            print("Tree is empty.")
+            return
+
+        queue = deque()
+        queue.append(self.root)
+        key_node = None
+        last_node = None
+
+        while queue:
+            last_node = queue.popleft()
+            if last_node.value == value:
+                key_node = last_node
+            if last_node.left:
+                queue.append(last_node.left)
+            if last_node.right:
+                queue.append(last_node.right)
+
+        if not key_node:
+            print(f"Value {value} not found in the tree.")
+            return
+
+        key_node.value = last_node.value
+        self._delete_deepest(last_node)
+
+    def _delete_deepest(self, deepest_node):
+        queue = deque()
+        queue.append(self.root)
+        while queue:
+            current = queue.popleft()
+            if current is deepest_node:
+                return
+            if current.left:
+                if current.left is deepest_node:
+                    current.left = None
+                    return
+                else:
+                    queue.append(current.left)
+            if current.right:
+                if current.right is deepest_node:
+                    current.right = None
+                    return
+                else:
+                    queue.append(current.right)
+
+    def search(self, value):
+        if not self.root:
+            print(f"Value {value} not found: Tree is empty.")
+            return False
+        queue = deque()
+        queue.append(self.root)
+        while queue:
+            current = queue.popleft()
+            if current.value == value:
+                print(f"Value {value} found in the tree.")
+                return True
+            if current.left:
+                queue.append(current.left)
+            if current.right:
+                queue.append(current.right)
+        print(f"Value {value} not found in the tree.")
+        return False
